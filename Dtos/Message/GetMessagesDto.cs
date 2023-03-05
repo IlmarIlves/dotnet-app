@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace dotnet_app.models
+namespace dotnet_app.Dtos.Message
 {
-    public class Characters
+    public class GetMessagesDto
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Text { get; set; } = string.Empty;
     }
 }
