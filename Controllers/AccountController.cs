@@ -52,12 +52,13 @@ namespace dotnet_app.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            return Json(new { success = true });
+
         }
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserDto request)
+        public async Task<IActionResult> Login([FromBody] UserDto request)
         {
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
@@ -89,7 +90,7 @@ namespace dotnet_app.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
             // Redirect to the home page...
-            return RedirectToAction("Index", "Home");
+            return Json(new { success = true });
         }
 
         [NonAction]

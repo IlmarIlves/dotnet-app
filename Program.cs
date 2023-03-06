@@ -58,6 +58,14 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "account",
+        pattern: "/Account/{action=login}/{id?}",
+        defaults: new { controller = "AccountController" });
+});
+
 app.MapRazorPages();
 
 app.UseAuthorization();
