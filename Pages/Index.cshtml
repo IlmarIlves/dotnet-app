@@ -8,9 +8,17 @@
 @if (User.Identity.IsAuthenticated)
 {
     <p>Welcome, @User.Identity.Name!</p>
-    <form method="post" asp-page-handler="logout" class="form-inline">
+    @* <form method="post" asp-page-handler="logout" class="form-inline">
         <button type="submit" class="btn btn-link">Logout</button>
-    </form>
+    </form> *@
+
+     <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/messager">Messager</a></li>
+            <li><a href="/calendar">Calendar</a></li>
+        </ul>
+    </nav>
 }
 else
 {
