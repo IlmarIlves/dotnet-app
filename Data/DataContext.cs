@@ -11,10 +11,8 @@ namespace dotnet_app.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-
         }
 
-        // public DbSet<Character> Characters => Set<Character>();
         public DbSet<UserModel> Users => Set<UserModel>();
         public DbSet<MessagesModel> Messages => Set<MessagesModel>();
         public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();

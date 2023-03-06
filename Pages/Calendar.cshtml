@@ -4,8 +4,16 @@
     ViewData["Title"] = "Calendar";
 }
 
-<h1>@ViewData["Title"]</h1>
+@if (User.Identity.IsAuthenticated)
+{
+    <p>Welcome, @User.Identity.Name!</p>
+    @* <form method="post" asp-page-handler="logout" class="form-inline">
+        <button type="submit" class="btn btn-link">Logout</button>
+    </form> *@
 
-<div>
-    
-</div>
+    <h1>@ViewData["Title"]</h1>
+
+    <div>
+        This is a messager page
+    </div>
+}
