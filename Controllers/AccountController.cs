@@ -14,10 +14,13 @@ using System.IdentityModel.Tokens.Jwt;
 using dotnet_app.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cors;
 
 namespace dotnet_app.Controllers
 {
+    [ApiController]
     [Route("[controller]")]
+    [EnableCors("AllowAllOrigins")]
     public class AccountController : Controller
     {
         public static UserModel user = new UserModel();
@@ -33,7 +36,7 @@ namespace dotnet_app.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            return Json(new { success = true });
         }
 
         [HttpPost("registerMain")]
@@ -90,6 +93,13 @@ namespace dotnet_app.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
             // Redirect to the home page...
+            return Json(new { success = true });
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
             return Json(new { success = true });
         }
 

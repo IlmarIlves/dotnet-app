@@ -20,9 +20,16 @@ namespace dotnet_app.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<MessagesModel>()
-                .HasOne(m => m.User)
-                .WithMany(u => u.Messages)
-                .HasForeignKey(m => m.UserId);
+           .HasOne(m => m.Sender)
+           .WithMany(u => u.SentMessages)
+           .HasForeignKey(m => m.SenderId)
+           .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<MessagesModel>()
+                .HasOne(m => m.Recipient)
+                .WithMany(u => u.ReceivedMessages)
+                .HasForeignKey(m => m.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

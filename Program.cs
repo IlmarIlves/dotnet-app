@@ -4,6 +4,7 @@ using dotnet_app.Dtos.User;
 using dotnet_app.models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -22,7 +23,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddRazorPages();
 
-// builder.Services.AddScoped<ICharacterService, CharacterService>();
+// Add CORS services
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("MyPolicy", builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+    });
 
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
@@ -56,6 +66,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 
+// Use CORS
+app.UseCors("MyPolicy");
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -75,19 +88,5 @@ app.UseAuthorization();
 app.UseSession();
 
 app.MapControllers();
-
-// app.MapPost("/register1", async (DataContext context, UserDto request) =>
-// {
-//     string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-//     UserModel user = new UserModel();
-//     user.Username = request.Username;
-//     user.PasswordHash = passwordHash;
-
-//     context.Users.Add(user);
-//     await context.SaveChangesAsync();
-//     return Results.Ok(await context.Users.ToListAsync());
-// });
-
 
 app.Run();

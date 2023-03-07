@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using dotnet_app.Data;
+using dotnet_app.Dtos.Message;
 using dotnet_app.models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,28 +15,50 @@ namespace dotnet_app.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class MessagesController : Controller
+    public class MessagesController : ControllerBase
     {
-        private readonly DataContext _dbContext;
+        private readonly IMapper _mapper;
+        private readonly DataContext _context;
 
-        public MessagesController(DataContext dbContext)
+        public MessagesController(DataContext context, IMapper mapper)
         {
-            _dbContext = dbContext;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MessagesModel>>> Get()
-        {
-            return await _dbContext.Messages.ToListAsync();
+            _context = context;
+            _mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] MessagesModel message)
+        public async Task<IActionResult> CreateMessage(MessageCreateDto messageCreateDto)
         {
-            _dbContext.Messages.Add(message);
-            await _dbContext.SaveChangesAsync();
+            var sender = await _context.Users.FindAsync(messageCreateDto.SenderId);
+            if (sender == null)
+            {
+                return BadRequest("Invalid sender ID");
+            }
 
-            return Ok();
+            var recipient = await _context.Users.FindAsync(messageCreateDto.RecipientId);
+            if (recipient == null)
+            {
+                return BadRequest("Invalid recipient ID");
+            }
+
+            var message = _mapper.Map<MessagesModel>(messageCreateDto);
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
+
+            return Ok(message);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMessagesForUser(int userId)
+        {
+            var messages = await _context.Messages
+                .Include(m => m.Sender)
+                .Include(m => m.Recipient)
+                .Where(m => m.RecipientId == userId || m.SenderId == userId)
+                .ToListAsync();
+
+            var messageDtos = _mapper.Map<List<MessageDto>>(messages);
+            return Ok(messageDtos);
         }
     }
 }

@@ -4,16 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace dotnet_app.models
+namespace dotnet_app.Dtos.Message
 {
-    public class MessagesModel
+    public class MessageCreateDto
     {
-        public int Id { get; set; }
+        [Required]
         public string Content { get; set; }
-        public DateTime Timestamp { get; set; }
+
+        [Required]
         public int SenderId { get; set; }
+
+        [Required]
         public int RecipientId { get; set; }
-        public UserModel Sender { get; set; }
-        public UserModel Recipient { get; set; }
     }
 }
