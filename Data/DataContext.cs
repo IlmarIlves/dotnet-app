@@ -15,7 +15,7 @@ namespace dotnet_app.Data
 
         public DbSet<UserModel> Users => Set<UserModel>();
         public DbSet<MessagesModel> Messages => Set<MessagesModel>();
-        public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();
+        public DbSet<CalendarEventModel> CalendarEvents => Set<CalendarEventModel>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

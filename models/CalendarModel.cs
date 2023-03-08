@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dotnet_app.models
 {
-    public class CalendarEvent
+    public class CalendarEventModel
     {
         public int Id { get; set; }
         public string Title { get; set; }

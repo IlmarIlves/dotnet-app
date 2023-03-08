@@ -21,13 +21,14 @@ namespace dotnet_app.Controllers
             _context = context;
         }
 
-        [HttpPost]
+        [HttpPost("createEvent")]
         public async Task<IActionResult> CreateEvent(CalendarEventDto model)
         {
-            var calendarEvent = new CalendarEvent
+            var calendarEvent = new CalendarEventModel
             {
-                Title = model.Title,
-                Date = model.Date,
+                Title = "model.Title",
+                Date = new DateTime(2023 - 03 - 10),
+                Description = "",
                 Users = new List<UserModel>()
             };
 
@@ -47,7 +48,7 @@ namespace dotnet_app.Controllers
             return Ok(new { id = calendarEvent.Id });
         }
 
-        [HttpGet]
+        [HttpGet("getEvent")]
         public async Task<IActionResult> GetEvents(int userId)
         {
             var user = await _context.Users

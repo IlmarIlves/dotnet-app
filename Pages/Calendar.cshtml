@@ -10,6 +10,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js'></script>
             <script>
 
@@ -17,6 +18,7 @@
                     var calendarEl = document.getElementById('calendar');
                     var calendar = new FullCalendar.Calendar(calendarEl, {
                         initialView: 'dayGridMonth',
+                        selectable: true,
                         events: [
                             {
                                 title: 'Event 1',
@@ -32,19 +34,19 @@
                                 start: start,
                                 end: end
                             };
-                            $('#calendar').fullCalendar('renderEvent', eventData, true);
-
                             $.ajax({
                                 url: '/CalendarEvents',
-                                method: 'POST',
-                                data: eventData,
+                                type: 'POST',
+                                data: {Id: "1", Title: "Testing", Date: start},
                                 success: function(response) {
-                                console.log('Event saved successfully.');
+                                    // handle successful response
+                                    console.log(response);
                                 },
-                                error: function(error) {
-                                console.log('Error saving event:', error);
+                                error: function(xhr, status, error) {
+                                    // handle error response
+                                    console.log(error);
                                 }
-                            });
+                                });
                         }
                     });
                     calendar.render();

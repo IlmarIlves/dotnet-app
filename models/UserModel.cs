@@ -15,6 +15,6 @@ namespace dotnet_app.models
         public byte[] PasswordSalt { get; set; }
         public List<MessagesModel> SentMessages { get; set; }
         public List<MessagesModel> ReceivedMessages { get; set; }
-        public ICollection<CalendarEvent> Events { get; set; }
+        public ICollection<CalendarEventModel> Events { get; set; }
     }
 }

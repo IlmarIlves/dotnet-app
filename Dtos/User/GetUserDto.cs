@@ -14,6 +14,6 @@ namespace dotnet_app.Dtos.User
         public string Username { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public List<MessagesModel>? messages { get; set; }
-        public List<CalendarEvent>? calendarEvents { get; set; }
+        public List<CalendarEventModel>? calendarEvents { get; set; }
     }
 }
