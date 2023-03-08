@@ -15,6 +15,6 @@ namespace dotnet_app.Dtos.Message
         public int SenderId { get; set; }
 
         [Required]
-        public int RecipientId { get; set; }
+        public List<int> RecipientIds { get; set; }
     }
 }

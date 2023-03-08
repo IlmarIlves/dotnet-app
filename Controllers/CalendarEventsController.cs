@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using dotnet_app.Data;
 using dotnet_app.models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,69 +16,58 @@ namespace dotnet_app.Controllers
     public class CalendarEventsController : Controller
     {
         private readonly DataContext _context;
+        private readonly UserManager<UserModel> _userManager;
 
-        public CalendarEventsController(DataContext context)
+        public CalendarEventsController(DataContext context, UserManager<UserModel> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        [HttpPost("createEvent")]
-        public async Task<IActionResult> CreateEvent(CalendarEventDto model)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CalendarEventModel>>> GetCalendarEvents()
         {
-            var calendarEvent = new CalendarEventModel
-            {
-                Title = "model.Title",
-                Date = new DateTime(2023 - 03 - 10),
-                Description = "",
-                Users = new List<UserModel>()
-            };
+            var events = await _context.CalendarEvents.ToListAsync();
+            return Ok(events);
+        }
 
-            foreach (var userId in model.UserIds)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CalendarEventModel>> GetCalendarEvent(int id)
+        {
+            var calendarEvent = await _context.CalendarEvents.FindAsync(id);
+
+            if (calendarEvent == null)
             {
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null)
-                {
-                    return NotFound($"User with Id {userId} not found.");
-                }
-                calendarEvent.Users.Add(user);
+                return NotFound();
             }
 
+            return Ok(calendarEvent);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CalendarEventModel>> CreateCalendarEvent(CalendarEventModel calendarEvent)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Retrieve the user IDs from the calendar event object
+            var userIds = calendarEvent.Users.Select(u => u.Id).ToList();
+
+            // Get the users associated with the provided user IDs
+            var users = await _userManager.Users.Where(u => userIds.Contains(u.Id)).ToListAsync();
+
+            // Associate the users with the calendar event
+            calendarEvent.Users = users;
+
+            // Add the event to the database
             _context.CalendarEvents.Add(calendarEvent);
             await _context.SaveChangesAsync();
 
-            return Ok(new { id = calendarEvent.Id });
-        }
-
-        [HttpGet("getEvent")]
-        public async Task<IActionResult> GetEvents(int userId)
-        {
-            var user = await _context.Users
-                .Include(u => u.Events)
-                    .ThenInclude(ce => ce.Users)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-            {
-                return NotFound($"User with Id {userId} not found.");
-            }
-
-            var events = user.Events.Select(e => new CalendarEventDto
-            {
-                Id = e.Id,
-                Title = e.Title,
-                Date = e.Date,
-                UserIds = e.Users.Select(u => u.Id).ToList()
-            });
-
-            return Ok(events);
+            return Ok(calendarEvent);
         }
     }
 
-    public class CalendarEventDto
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public DateTime Date { get; set; }
-        public List<int?> UserIds { get; set; }
-    }
+
 }

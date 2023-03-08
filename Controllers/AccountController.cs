@@ -33,10 +33,17 @@ namespace dotnet_app.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet]
-        public IActionResult Register()
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserModel>> GetUser(int id)
         {
-            return Json(new { success = true });
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
         }
 
         [HttpPost("registerMain")]

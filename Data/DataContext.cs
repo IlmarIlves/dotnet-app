@@ -19,17 +19,19 @@ namespace dotnet_app.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MessagesModel>()
-           .HasOne(m => m.Sender)
-           .WithMany(u => u.SentMessages)
-           .HasForeignKey(m => m.SenderId)
-           .OnDelete(DeleteBehavior.Restrict);
+            base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<MessagesModel>()
-                .HasOne(m => m.Recipient)
-                .WithMany(u => u.ReceivedMessages)
-                .HasForeignKey(m => m.RecipientId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Define many-to-many relationship between User and CalendarEvent models
+            modelBuilder.Entity<UserModel>()
+           .HasMany(u => u.Messages)
+           .WithMany(m => m.Users)
+           .UsingEntity(j => j.ToTable("UserMessages"));
+
+            // Many-to-many relationship between UserModel and CalendarEventModel
+            modelBuilder.Entity<UserModel>()
+                .HasMany(u => u.CalendarEvents)
+                .WithMany(e => e.Users)
+                .UsingEntity(j => j.ToTable("UserCalendarEvents"));
         }
     }
 }

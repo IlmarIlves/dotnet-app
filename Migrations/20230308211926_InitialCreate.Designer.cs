@@ -12,7 +12,7 @@ using dotnet_app.Data;
 namespace dotnet_app.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230308140200_InitialCreate")]
+    [Migration("20230308211926_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,17 +27,32 @@ namespace dotnet_app.Migrations
 
             modelBuilder.Entity("CalendarEventModelUserModel", b =>
                 {
-                    b.Property<int>("EventsId")
+                    b.Property<int>("CalendarEventsId")
                         .HasColumnType("int");
 
                     b.Property<int>("UsersId")
                         .HasColumnType("int");
 
-                    b.HasKey("EventsId", "UsersId");
+                    b.HasKey("CalendarEventsId", "UsersId");
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("CalendarEventModelUserModel");
+                    b.ToTable("UserCalendarEvents", (string)null);
+                });
+
+            modelBuilder.Entity("MessagesModelUserModel", b =>
+                {
+                    b.Property<int>("MessagesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MessagesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("UserMessages", (string)null);
                 });
 
             modelBuilder.Entity("dotnet_app.models.CalendarEventModel", b =>
@@ -59,9 +74,6 @@ namespace dotnet_app.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("CalendarEvents");
@@ -79,20 +91,7 @@ namespace dotnet_app.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RecipientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RecipientId");
-
-                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages");
                 });
@@ -126,7 +125,7 @@ namespace dotnet_app.Migrations
                 {
                     b.HasOne("dotnet_app.models.CalendarEventModel", null)
                         .WithMany()
-                        .HasForeignKey("EventsId")
+                        .HasForeignKey("CalendarEventsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -137,30 +136,19 @@ namespace dotnet_app.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("dotnet_app.models.MessagesModel", b =>
+            modelBuilder.Entity("MessagesModelUserModel", b =>
                 {
-                    b.HasOne("dotnet_app.models.UserModel", "Recipient")
-                        .WithMany("ReceivedMessages")
-                        .HasForeignKey("RecipientId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("dotnet_app.models.MessagesModel", null)
+                        .WithMany()
+                        .HasForeignKey("MessagesId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("dotnet_app.models.UserModel", "Sender")
-                        .WithMany("SentMessages")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("dotnet_app.models.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Recipient");
-
-                    b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("dotnet_app.models.UserModel", b =>
-                {
-                    b.Navigation("ReceivedMessages");
-
-                    b.Navigation("SentMessages");
                 });
 #pragma warning restore 612, 618
         }

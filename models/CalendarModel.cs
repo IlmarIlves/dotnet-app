@@ -12,7 +12,7 @@ namespace dotnet_app.models
         public string Title { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; }
-        public int UserId { get; set; }
-        public ICollection<UserModel> Users { get; set; }
+
+        public ICollection<UserModel> Users { get; set; } = new List<UserModel>();
     }
 }

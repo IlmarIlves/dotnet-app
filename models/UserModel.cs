@@ -13,8 +13,7 @@ namespace dotnet_app.models
         public string Username { get; set; } = string.Empty;
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        public List<MessagesModel> SentMessages { get; set; }
-        public List<MessagesModel> ReceivedMessages { get; set; }
-        public ICollection<CalendarEventModel> Events { get; set; }
+        public ICollection<MessagesModel> Messages { get; set; } = new List<MessagesModel>();
+        public ICollection<CalendarEventModel> CalendarEvents { get; set; } = new List<CalendarEventModel>();
     }
 }

@@ -7,6 +7,7 @@ using AutoMapper;
 using dotnet_app.Data;
 using dotnet_app.Dtos.Message;
 using dotnet_app.models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,48 +18,61 @@ namespace dotnet_app.Controllers
     [ApiController]
     public class MessagesController : ControllerBase
     {
-        private readonly IMapper _mapper;
+        private readonly UserManager<UserModel> _userManager;
         private readonly DataContext _context;
 
-        public MessagesController(DataContext context, IMapper mapper)
+        public MessagesController(DataContext context, UserManager<UserModel> userManager)
         {
             _context = context;
-            _mapper = mapper;
+            _userManager = userManager;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateMessage(MessageCreateDto messageCreateDto)
+        [HttpGet("getMessages")]
+        public async Task<ActionResult<IEnumerable<MessagesModel>>> GetMessages()
         {
-            var sender = await _context.Users.FindAsync(messageCreateDto.SenderId);
-            if (sender == null)
-            {
-                return BadRequest("Invalid sender ID");
-            }
+            var messages = await _context.Messages.ToListAsync();
+            return Ok(messages);
+        }
 
-            var recipient = await _context.Users.FindAsync(messageCreateDto.RecipientId);
-            if (recipient == null)
-            {
-                return BadRequest("Invalid recipient ID");
-            }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<MessagesModel>> GetMessage(int id)
+        {
+            var message = await _context.Messages.FindAsync(id);
 
-            var message = _mapper.Map<MessagesModel>(messageCreateDto);
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
+            if (message == null)
+            {
+                return NotFound();
+            }
 
             return Ok(message);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMessagesForUser(int userId)
+        [HttpPost("createMessages")]
+        public async Task<ActionResult<MessagesModel>> CreateMessage([FromBody] MessagesModel message)
         {
-            var messages = await _context.Messages
-                .Include(m => m.Sender)
-                .Include(m => m.Recipient)
-                .Where(m => m.RecipientId == userId || m.SenderId == userId)
-                .ToListAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            var messageDtos = _mapper.Map<List<MessageDto>>(messages);
-            return Ok(messageDtos);
+            // Get the user who created the message
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            // Create a new UserModel object for the user
+            var userModel = new UserModel
+            {
+                Id = user.Id,
+                Username = user.Username
+            };
+
+            // Add the UserModel object to the message's user collection
+            message.Users = new List<UserModel> { userModel };
+
+            // Add the message to the database
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
+
+            return Ok(message);
         }
     }
 }
