@@ -5,41 +5,6 @@
     Layout = null;
 }
 
-<style>
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    }
-
-header {
-    background-color: #4285f4;
-    color: white;
-    padding: 20px;
-}
-
-.event-details {
-    margin: 50px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-}
-
-.details-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.details-label {
-    font-weight: bold;
-    width: 120px;
-}
-
-.details-value {
-    flex: 1;
-}
-
-</style>
 
 <!DOCTYPE html>
 <html>
@@ -51,7 +16,36 @@ header {
                 document.addEventListener('DOMContentLoaded', function() {
                     var calendarEl = document.getElementById('calendar');
                     var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth'
+                        initialView: 'dayGridMonth',
+                        events: [
+                            {
+                                title: 'Event 1',
+                                start: '2023-03-10'
+                            },
+                            {
+                                title: 'Event 2',
+                                start: '2023-03-15',
+                            }
+                        ],
+                        select: function(start, end) {
+                            var eventData = {
+                                start: start,
+                                end: end
+                            };
+                            $('#calendar').fullCalendar('renderEvent', eventData, true);
+
+                            $.ajax({
+                                url: '/CalendarEvents',
+                                method: 'POST',
+                                data: eventData,
+                                success: function(response) {
+                                console.log('Event saved successfully.');
+                                },
+                                error: function(error) {
+                                console.log('Error saving event:', error);
+                                }
+                            });
+                        }
                     });
                     calendar.render();
                 });
