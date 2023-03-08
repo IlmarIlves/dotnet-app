@@ -1,19 +1,99 @@
 @page "/messager"
 @model dotnet_app.Pages.Messages
-@{
-    ViewData["Title"] = "Messages";
+
+@if (User.Identity.IsAuthenticated){
+    Layout = null;
 }
 
-@if (User.Identity.IsAuthenticated)
-{
-    <p>Welcome, @User.Identity.Name!</p>
-    @* <form method="post" asp-page-handler="logout" class="form-inline">
-        <button type="submit" class="btn btn-link">Logout</button>
-    </form> *@
-
-    <h1>@ViewData["Title"]</h1>
-
-    <div>
-        This is a messager page
-    </div>
+<style>
+    /* Set up basic styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Style the page header */
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+/* Style the message container */
+.message-container {
+  margin-top: 20px;
+}
+
+.message {
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+/* Style the input container */
+.input-container {
+  display: flex;
+  margin-top: 20px;
+}
+
+input[type="text"] {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+button[type="submit"] {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
+</style>
+
+
+    @* <p>Welcome, @User.Identity.Name!</p> *@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Messaging View</title>
+        <link rel="stylesheet" href="messaging.css" />
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <h1>My Messaging App</h1>
+            </div>
+        </header>
+
+            @* <div class="message-container">
+                @foreach (var messageModel in Model)
+                {
+                    <div class="message">@messageModel.Content</div>
+                }
+            </div> *@
+
+        <form id="message-form" asp-action="SendMessage" method="post">
+            <div class="input-container">
+                <input type="text" name="message" placeholder="Type your message here" />
+                <button type="submit">Send</button>
+            </div>
+        </form>
+    </body>
+</html>
